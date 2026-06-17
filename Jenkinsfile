@@ -1,49 +1,52 @@
 pipeline {
+    agent any  // Use any available agent
 
-agent any
+    tools {
+        maven 'Maven'  // Ensure this matches the name configured in Jenkins
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/prasadmv-collab/selex.git'
+            }
+        }
 
-tools{
-	maven 'Maven'
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'  // Run Maven build
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'mvn test'  // Run unit tests
+            }
+        }
+        
+stage('Check Target Folder') {
+    steps {
+        sh 'ls -l target'
+    }
 }
+        
+        
+       
+       stage('Run Application') {
+    steps {
+        sh 'java -jar target/selex-1.0-SNAPSHOT.jar'
+    }
+}
+        
 
-	stages{
-		stage('checkout')
-		{
-		steps{
-			git branch:'main',url:'https://github.com/prasadmv-collab/selex.git'
-		}
-		}
-		
-		stage('Build')
-		{
-		steps{
-		
-			sh 'mvn clean package'
-			}
-			}
-	
-	stage('Test')
-	{
-	steps{
-		sh 'mvn test'
-		}
-		}
-		
-		}
-	post{
-		always{
-		
-			junit '**/target/surefire-reports/*.xml'
-			
-			}
-			
-			success{
-				echo 'Build successful'
-				}
-				
-			failure{
-			
-				echo 'Build failure'
-				}
-			}
-		}
+        
+    }
+
+    post {
+        success {
+            echo 'Build and deployment successful!'
+        }
+        failure {
+            echo 'Build failed!'
+        }
+    }
+}
