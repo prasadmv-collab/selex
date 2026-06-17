@@ -33,7 +33,7 @@ stage('Check Target Folder') {
        
        stage('Run Application') {
     steps {
-        sh 'java -jar target/selex-1.0-SNAPSHOT.jar'
+        sh 'mvn exec:java -Dexec.mainClass=com.example.App'
     }
 }
         
